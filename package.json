@@ -1,7 +1,13 @@
 {
+  "name": "chopin",
+  "description": "A qa tool to quickly find most repeated step definitions in Teladoc regression suite",
+  "version": "1.0.0",
+  "main": "chopin.js",
   "dependencies": {
     "fs": "^0.0.1-security",
+    "lodash": "^4.17.15",
     "path": "^0.12.7",
     "yargs": "^15.3.1"
-  }
+  },
+  "author": "Mohammed Ali @ Teladoc <mali@teladoc.com>"
 }
