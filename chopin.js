@@ -10,7 +10,6 @@ const SKIP = ['else', 'end', 'steps %{', '}', 'eventually do']
  * files.
  * 
  * @param {*} dir 
- * @param {*} count
  */
 var findFiles = function(dir, done) {
   var results = [];
