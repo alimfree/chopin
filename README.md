@@ -2,7 +2,7 @@ Chopin allows you to search a directory and count how many times each line appea
 
 Usage
 ```
-$ git clone ...
+$ git clone chopin
 $ cd chopin
 $ node chopin.js chopin --dir ../path/to/acceptance_tests --c 15
 ```
