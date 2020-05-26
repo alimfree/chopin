@@ -4,5 +4,5 @@ Usage
 ```
 $ git clone ...
 $ cd chopin
-$ node chopin.js chopin --dir ../path/to/dir --c 15
+$ node chopin.js chopin --dir ../path/to/acceptance_tests --c 15
 ```
