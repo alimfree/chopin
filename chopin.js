@@ -3,13 +3,14 @@ const path = require('path');
 const fs = require('fs');
 const util = require('util');
 const _ = require('lodash');
+const SKIP = ['else', 'end', 'steps %{', '}', 'eventually do']
 
 /**
  * Walks acceptance suite path and looks for all
  * files.
  * 
  * @param {*} dir 
- * @param {*} done 
+ * @param {*} count
  */
 var findFiles = function(dir, done) {
   var results = [];
@@ -39,11 +40,7 @@ var findFiles = function(dir, done) {
  * steps in begining of hash.
  */
 function sortDescending(unordered){
-  let ordered = {};
-  Object.keys(unordered).sort().forEach(function(key) {
-    ordered[key] = unordered[key];
-  });
-  return ordered
+  return Object.keys(unordered).sort(function(a,b){return unordered[b]-unordered[a]})
 }
 
 /*
@@ -78,7 +75,7 @@ async function findDuplicateSteps(file){
  * Skip commented out steps and documentation 
  */
 function skip(line){
-  return (line[0] === "#" || line[0] === "@" || line === "") 
+  return (line[0] === "#" || line[0] === "@" || line === "" || SKIP.includes(line)) 
 }
 
 const argv = yargs
@@ -86,7 +83,13 @@ const argv = yargs
       dir: {
           description: 'the acceptance suite directory path',
           alias: 'd',
-            type: 'string',
+            type: 'string'
+      },
+      count: {
+          description: 'the number of steps to display',
+          alias: 'c',
+          type: 'number',
+          default: 10
       }
   })
   .help()
@@ -97,7 +100,7 @@ const argv = yargs
 let promiseFindFiles = util.promisify(findFiles)
 
 if (argv.dir) {
-  console.log('Searching for duplicate steps...')
+  console.log(`Listing ${argv.count} most duplicated steps...`)
   const acceptanceSuitePath = path.join(argv.dir, 'features');
   //passsing directoryPath and callback function
   promiseFindFiles(acceptanceSuitePath).then(function(files) {
@@ -105,10 +108,11 @@ if (argv.dir) {
       return findDuplicateSteps(file)
     }));
   }).then(function(results){
-    let resultObject = results.reduce(function(resultObject, duplicates){
-      return _.mergeWith(resultObject, duplicates, mergeDuplicates);
+    let steps = results.reduce(function(steps, duplicates){
+      return _.mergeWith(steps, duplicates, mergeDuplicates);
     }, {});
-    console.log(sortDescending(resultObject))
+    ordered = sortDescending(steps)
+    console.log(ordered.slice(0,argv.count).map(key => (`${steps[key]} ${key}`)))
   });
 }
 
