@@ -6,7 +6,7 @@ const _ = require('lodash');
 const SKIP = ['else', 'end', 'steps %{', '}', 'eventually do']
 
 /**
- * Walks acceptance suite path and looks for all
+ * Recursively Walks acceptance suite path and looks for all
  * files.
  * 
  * @param {*} dir 
@@ -62,8 +62,8 @@ async function findDuplicateSteps(file){
   let duplicateSteps = {};
 
   for await (let line of lineReader) {
-    line = line.trim()
-    if(skip(line)) continue
+    line = line.trim();
+    if(skip(line)) continue;
     duplicateSteps[line] = duplicateSteps[line] || 0;
     duplicateSteps[line]++;
   }
@@ -74,7 +74,7 @@ async function findDuplicateSteps(file){
  * Skip commented out steps and documentation 
  */
 function skip(line){
-  return (line[0] === "#" || line[0] === "@" || line === "" || SKIP.includes(line)) 
+  return (line[0] === "#" || line[0] === "@" || line === "" || SKIP.includes(line));
 }
 
 const argv = yargs
@@ -96,7 +96,7 @@ const argv = yargs
   .argv;
 
 
-let promiseFindFiles = util.promisify(findFiles)
+let promiseFindFiles = util.promisify(findFiles);
 
 if (argv.dir) {
   console.log(`Listing ${argv.count} most duplicated steps...`)
