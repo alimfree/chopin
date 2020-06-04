@@ -13,15 +13,15 @@ const SKIP = ['else', 'end', 'steps %{', '}', 'eventually do']
  */
 var findFiles = function(dir, done) {
   var results = [];
-   fs.readdir(dir, function(err, list) {
+   fs.readdir(dir, function walkDir(err, list) {
     if (err) return done(err);
     var pending = list.length;
     if (!pending) return done(null, results);
-    list.forEach(function(file) {
+    list.forEach(function openPath(file) {
       file = path.resolve(dir, file);
-        fs.stat(file, function(err, stat) {
+        fs.stat(file, function OpenDir(err, stat) {
           if (stat && stat.isDirectory()) {
-          findFiles(file, function(err, res) {
+          findFiles(file, function collectAllFiles(err, res) {
             results = results.concat(res);
             if (!--pending) done(null, results);
           });
@@ -39,7 +39,7 @@ var findFiles = function(dir, done) {
  * steps in begining of hash.
  */
 function sortDescending(unordered){
-  return Object.keys(unordered).sort(function(a,b){return unordered[b]-unordered[a]})
+  return Object.keys(unordered).sort(function sortHash(a,b){return unordered[b]-unordered[a]})
 }
 
 /*
@@ -101,13 +101,12 @@ let promiseFindFiles = util.promisify(findFiles)
 if (argv.dir) {
   console.log(`Listing ${argv.count} most duplicated steps...`)
   const acceptanceSuitePath = path.join(argv.dir, 'features');
-  //passsing directoryPath and callback function
-  promiseFindFiles(acceptanceSuitePath).then(function(files) {
-    return Promise.all(files.map(function(file){
+  promiseFindFiles(acceptanceSuitePath).then(function collectDuplicateStepsInAll(files) {
+    return Promise.all(files.map(function searchEachFile(file){
       return findDuplicateSteps(file)
     }));
-  }).then(function(results){
-    let steps = results.reduce(function(steps, duplicates){
+  }).then(function printMostDuplicatedSteps(results){
+    let steps = results.reduce(function formatDuplicateSteps(steps, duplicates){
       return _.mergeWith(steps, duplicates, mergeDuplicates);
     }, {});
     ordered = sortDescending(steps)
