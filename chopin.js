@@ -11,7 +11,7 @@ const SKIP = ['else', 'end', 'steps %{', '}', 'eventually do']
  * 
  * @param {*} dir 
  */
-var findFiles = function(dir, done) {
+function findFiles(dir, done) {
   var results = [];
    fs.readdir(dir, function walkDir(err, list) {
     if (err) return done(err);
